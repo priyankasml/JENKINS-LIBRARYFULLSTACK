@@ -1,72 +1,46 @@
 pipeline {
     agent any
 
-    tools {
-        // Make sure this matches your Maven tool name in Jenkins Global Tool Configuration
-        maven 'MAVEN'
+    environment {
+        JAVA_HOME = "C:\\Program Files\\Java\\jdk-21"
+        PATH = "${JAVA_HOME}\\bin;${env.PATH}"
+        TOMCAT_HOME = "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1"
     }
 
     stages {
-
-        // ===== FRONTEND BUILD =====
-        stage('Build Frontend') {
+        stage('Checkout') {
             steps {
-                dir('FRONTEND/LIBRARY-REACT') {
-                    echo 'Installing frontend dependencies...'
-                    bat 'npm install'
-                    echo 'Building frontend...'
-                    bat 'npm run build'
-                }
+                git branch: 'main', url: 'https://github.com/username/library-backend.git'
             }
         }
 
-        // ===== FRONTEND DEPLOY =====
-        stage('Deploy Frontend to Tomcat') {
+        stage('Build') {
             steps {
-                bat '''
-                if exist "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\library-react" (
-                    rmdir /S /Q "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\library-react"
-                )
-                mkdir "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\library-react"
-                xcopy /E /I /Y FRONTEND\\LIBRARY-REACT\\dist\\* "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\library-react"
-                '''
+                echo 'Building WAR with Maven...'
+                bat 'mvn clean package'
             }
         }
 
-        // ===== BACKEND BUILD =====
-        stage('Build Backend') {
+        stage('Deploy to Tomcat') {
             steps {
-                dir('BACKEND/library-backend') {
-                    echo 'Building backend with Maven...'
-                    // Uses Jenkins Maven tool
-                    bat 'mvn clean package -DskipTests'
-                }
+                echo 'Stopping Tomcat...'
+                bat "\"%TOMCAT_HOME%\\bin\\shutdown.bat\""
+                
+                echo 'Copying WAR to Tomcat webapps...'
+                bat "copy target\\*.war \"%TOMCAT_HOME%\\webapps\\\" /Y"
+
+                echo 'Starting Tomcat...'
+                bat "\"%TOMCAT_HOME%\\bin\\startup.bat\""
             }
         }
-
-        // ===== BACKEND DEPLOY =====
-        stage('Deploy Backend to Tomcat') {
-            steps {
-                bat '''
-                if exist "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\library-backend.war" (
-                    del /Q "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\library-backend.war"
-                )
-                if exist "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\library-backend" (
-                    rmdir /S /Q "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\library-backend"
-                )
-                copy "BACKEND\\library-backend\\target\\*.war" "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\"
-                '''
-            }
-        }
-
     }
 
     post {
         success {
-            echo '🎉 Fullstack Deployment Successful!'
+            echo '✅ Deployment Successful!'
         }
         failure {
-            echo '❌ Pipeline Failed.'
+            echo '❌ Deployment Failed!'
         }
     }
 }
