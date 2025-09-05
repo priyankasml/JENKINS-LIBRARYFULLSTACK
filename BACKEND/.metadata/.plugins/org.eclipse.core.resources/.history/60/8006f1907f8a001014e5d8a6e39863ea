@@ -71,7 +71,6 @@
     </dependencies>
 
     <build>
-    <finalName>springbootlibraryapi</finalName>
         <plugins>
             <!-- Spring Boot Maven Plugin -->
             <plugin>
