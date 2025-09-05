@@ -1,0 +1,71 @@
+.library-container {
+  max-width: 600px;
+  margin: 30px auto;
+  padding: 20px;
+  text-align: center;
+  background: #fdfdfd;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+}
+
+.book-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.book-form label {
+  font-weight: bold;
+  text-align: left;
+}
+
+.book-form select,
+.book-form input,
+.book-form button {
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.book-form button {
+  background: #4caf50;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.book-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.book-card {
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fafafa;
+  text-align: left;
+}
+
+.actions {
+  margin-top: 10px;
+}
+
+.actions button {
+  margin-right: 8px;
+  padding: 5px 10px;
+  border: none;
+  cursor: pointer;
+}
+
+.actions button:first-child {
+  background: #ff9800;
+  color: white;
+}
+
+.actions button:last-child {
+  background: #f44336;
+  color: white;
+}

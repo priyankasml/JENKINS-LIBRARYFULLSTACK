@@ -1,0 +1,115 @@
+/* Full-page background */
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(120deg, #1e3c72, #2a5298);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 30px;
+  color: #fff;
+}
+
+/* Main container */
+.library-container {
+  background: rgba(255, 255, 255, 0.12);
+  padding: 30px;
+  border-radius: 15px;
+  width: 100%;
+  max-width: 900px; /* Wider form */
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.3);
+}
+
+/* Title */
+.title {
+  text-align: center;
+  margin-bottom: 25px;
+  font-size: 32px;
+  font-weight: bold;
+}
+
+/* Form */
+.book-form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Two-column layout */
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.book-form select,
+.book-form input {
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  font-size: 15px;
+}
+
+.book-form button {
+  grid-column: span 2;
+  padding: 14px;
+  border: none;
+  border-radius: 8px;
+  background: #ff9800;
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.book-form button:hover {
+  background: #e68900;
+}
+
+/* Book list */
+.book-list {
+  display: grid;
+  gap: 20px;
+}
+
+.book-card {
+  background: rgba(255, 255, 255, 0.18);
+  padding: 20px;
+  border-radius: 10px;
+  transition: transform 0.2s;
+}
+
+.book-card:hover {
+  transform: scale(1.02);
+}
+
+.book-card h3 {
+  margin: 0 0 10px;
+}
+
+.buttons {
+  margin-top: 12px;
+  display: flex;
+  gap: 12px;
+}
+
+.edit-btn {
+  background: #4caf50;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: white;
+}
+
+.delete-btn {
+  background: #f44336;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: white;
+}
+
+.empty {
+  text-align: center;
+  font-size: 18px;
+  opacity: 0.85;
+}
