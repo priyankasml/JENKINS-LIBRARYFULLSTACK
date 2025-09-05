@@ -2,46 +2,44 @@ pipeline {
     agent any
 
     environment {
-        // Java & Maven environment if needed
-        JAVA_HOME = "C:\\Program Files\\Java\\jdk-21"
-        PATH = "${JAVA_HOME}\\bin;C:\\Program Files\\Apache\\maven\\bin;${env.PATH}"
+        // Maven tool configured in Jenkins (Global Tool Configuration)
+        MAVEN_HOME = tool name: 'MAVEN', type: 'maven'
+        PATH = "${MAVEN_HOME}/bin:${env.PATH}"
         
-        // Tomcat details
-        TOMCAT_HOME = "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1"
-        WAR_NAME = "library-backend-0.0.1-SNAPSHOT.war"
+        // Git credentials ID you created in Jenkins
+        GIT_CREDENTIALS = 'github-credentials'
+        
+        // Tomcat server details
+        TOMCAT_URL = 'http://localhost:8080/manager/text'
+        TOMCAT_USER = 'admin'
+        TOMCAT_PASSWORD = 'admin-password'
+        WAR_NAME = 'library-backend-0.0.1-SNAPSHOT.war'
+        WAR_PATH = 'target/library-backend-0.0.1-SNAPSHOT.war'
     }
 
     stages {
-        stage('Checkout') {
+        stage('Checkout SCM') {
             steps {
-                // Checkout your repo with PAT credentials
-                git(
-                    branch: 'main',
-                    url: 'https://github.com/priyankasml/JENKINS-LIBRARYFULLSTACK.git',
-                    credentialsId: 'github-credentials'
-                )
+                echo "Cloning Git repository..."
+                git branch: 'main', url: 'https://github.com/priyankasml/JENKINS-LIBRARYFULLSTACK.git', credentialsId: "${GIT_CREDENTIALS}"
             }
         }
 
         stage('Build') {
             steps {
                 echo "Building project with Maven..."
-                bat "mvn clean package -DskipTests"
+                bat "${MAVEN_HOME}\\bin\\mvn clean package -DskipTests"
             }
         }
 
         stage('Deploy to Tomcat') {
             steps {
                 echo "Deploying WAR to Tomcat..."
-                // Stop Tomcat
-                bat "\"%TOMCAT_HOME%\\bin\\shutdown.bat\""
-                sleep 5
-                
-                // Copy WAR to Tomcat webapps
-                bat "copy target\\${WAR_NAME} %TOMCAT_HOME%\\webapps\\${WAR_NAME}"
-                
-                // Start Tomcat
-                bat "\"%TOMCAT_HOME%\\bin\\startup.bat\""
+                script {
+                    def warFile = "${env.WAR_PATH}"
+                    def deployURL = "${env.TOMCAT_URL}/deploy?path=/library&update=true"
+                    bat "curl --upload-file ${warFile} --user ${TOMCAT_USER}:${TOMCAT_PASSWORD} ${deployURL}"
+                }
             }
         }
     }
