@@ -14,7 +14,7 @@ pipeline {
         TOMCAT_USER = 'admin'
         TOMCAT_PASSWORD = 'admin-password'
         WAR_NAME = 'library-backend-0.0.1-SNAPSHOT.war'
-        WAR_PATH = 'target/library-backend-0.0.1-SNAPSHOT.war'
+        WAR_PATH = 'library-backend/target/library-backend-0.0.1-SNAPSHOT.war'
     }
 
     stages {
@@ -28,7 +28,9 @@ pipeline {
         stage('Build') {
             steps {
                 echo "Building project with Maven..."
-                bat "${MAVEN_HOME}\\bin\\mvn clean package -DskipTests"
+                dir('library-backend') {  // <- run Maven inside backend folder
+                    bat "${MAVEN_HOME}\\bin\\mvn clean package -DskipTests"
+                }
             }
         }
 
