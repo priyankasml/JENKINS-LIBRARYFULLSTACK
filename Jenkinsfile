@@ -2,9 +2,8 @@ pipeline {
     agent any
 
     tools {
-        // Use the Maven installation name from Jenkins Global Tool Configuration
-        maven 'Maven'  
-        // Optional: nodejs if you want, but npm works if installed in PATH
+        // Make sure this matches your Maven tool name in Jenkins Global Tool Configuration
+        maven 'MAVEN'
     }
 
     stages {
@@ -39,7 +38,7 @@ pipeline {
             steps {
                 dir('BACKEND/library-backend') {
                     echo 'Building backend with Maven...'
-                    // Use mvn from PATH or Jenkins Maven tool
+                    // Uses Jenkins Maven tool
                     bat 'mvn clean package -DskipTests'
                 }
             }
@@ -71,4 +70,3 @@ pipeline {
         }
     }
 }
-
