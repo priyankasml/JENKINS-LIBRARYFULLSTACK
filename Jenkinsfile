@@ -5,15 +5,20 @@ pipeline {
         // Maven tool configured in Jenkins
         MAVEN_HOME = tool name: 'MAVEN', type: 'maven'
         PATH = "${MAVEN_HOME}/bin:${env.PATH}"
+        
+        // Git credentials (if private repo)
+        GIT_CREDENTIALS = 'github-credentials'
+
+        // Tomcat server details
+        TOMCAT_PATH = 'C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps'
     }
 
     stages {
-
-        // ===== FRONTEND BUILD =====
+        // ================= FRONTEND BUILD =================
         stage('Build Frontend') {
             steps {
-                dir('library-frontend') { // <-- Your React frontend folder
-                    echo "Installing dependencies..."
+                dir('library-frontend') {  // <-- Make sure folder name matches repo
+                    echo "Installing frontend dependencies..."
                     bat 'npm install'
                     echo "Building frontend..."
                     bat 'npm run build'
@@ -21,44 +26,43 @@ pipeline {
             }
         }
 
-        // ===== FRONTEND DEPLOY =====
+        // ================= FRONTEND DEPLOY =================
         stage('Deploy Frontend to Tomcat') {
             steps {
-                bat '''
-                if exist "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reactlibrary" (
-                    rmdir /S /Q "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reactlibrary"
+                bat """
+                if exist "${env.TOMCAT_PATH}\\library-react" (
+                    rmdir /S /Q "${env.TOMCAT_PATH}\\library-react"
                 )
-                mkdir "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reactlibrary"
-                xcopy /E /I /Y library-frontend\\build\\* "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reactlibrary"
-                '''
+                mkdir "${env.TOMCAT_PATH}\\library-react"
+                xcopy /E /I /Y library-frontend\\dist\\* "${env.TOMCAT_PATH}\\library-react"
+                """
             }
         }
 
-        // ===== BACKEND BUILD =====
+        // ================= BACKEND BUILD =================
         stage('Build Backend') {
             steps {
-                dir('library-backend') { // <-- Your Spring Boot backend folder
+                dir('library-backend') {  // <-- Make sure folder name matches repo
                     echo "Building backend with Maven..."
                     bat "${MAVEN_HOME}\\bin\\mvn clean package -DskipTests"
                 }
             }
         }
 
-        // ===== BACKEND DEPLOY =====
+        // ================= BACKEND DEPLOY =================
         stage('Deploy Backend to Tomcat') {
             steps {
-                bat '''
-                if exist "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\springbootlibraryapi.war" (
-                    del /Q "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\springbootlibraryapi.war"
+                bat """
+                if exist "${env.TOMCAT_PATH}\\springbootlibraryapi.war" (
+                    del /Q "${env.TOMCAT_PATH}\\springbootlibraryapi.war"
                 )
-                if exist "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\springbootlibraryapi" (
-                    rmdir /S /Q "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\springbootlibraryapi"
+                if exist "${env.TOMCAT_PATH}\\springbootlibraryapi" (
+                    rmdir /S /Q "${env.TOMCAT_PATH}\\springbootlibraryapi"
                 )
-                copy "library-backend\\target\\*.war" "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\"
-                '''
+                copy library-backend\\target\\*.war "${env.TOMCAT_PATH}\\"
+                """
             }
         }
-
     }
 
     post {
