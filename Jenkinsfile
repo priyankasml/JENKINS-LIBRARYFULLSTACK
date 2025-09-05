@@ -10,9 +10,9 @@ pipeline {
         GIT_CREDENTIALS = 'github-credentials'
         
         // Tomcat server details
-        TOMCAT_URL = 'http://localhost:8080/manager/text'
+        TOMCAT_URL = 'http://localhost:8081/manager/text'
         TOMCAT_USER = 'admin'
-        TOMCAT_PASSWORD = 'admin-password'
+        TOMCAT_PASSWORD = 'root'
         WAR_NAME = 'library-backend-0.0.1-SNAPSHOT.war'
         WAR_PATH = 'library-backend/target/library-backend-0.0.1-SNAPSHOT.war'
     }
@@ -21,14 +21,16 @@ pipeline {
         stage('Checkout SCM') {
             steps {
                 echo "Cloning Git repository..."
-                git branch: 'main', url: 'https://github.com/priyankasml/JENKINS-LIBRARYFULLSTACK.git', credentialsId: "${GIT_CREDENTIALS}"
+                git branch: 'main', 
+                    url: 'https://github.com/priyankasml/JENKINS-LIBRARYFULLSTACK.git', 
+                    credentialsId: "${GIT_CREDENTIALS}"
             }
         }
 
         stage('Build') {
             steps {
-                echo "Building project with Maven..."
-                dir('library-backend') {
+                dir('library-backend') { // make sure Maven runs in correct folder
+                    echo "Building project with Maven..."
                     bat "${MAVEN_HOME}\\bin\\mvn clean package -DskipTests"
                 }
             }
