@@ -1,73 +1,63 @@
 pipeline {
     agent any
 
-    environment {
-        // Maven tool configured in Jenkins
-        MAVEN_HOME = tool name: 'MAVEN', type: 'maven'
-        PATH = "${MAVEN_HOME}/bin:${env.PATH}"
-        
-        // Git credentials (if private repo)
-        GIT_CREDENTIALS = 'github-credentials'
-
-        // Tomcat server details
-        TOMCAT_PATH = 'C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps'
-    }
-
     stages {
-        // ================= FRONTEND BUILD =================
+
+        // ===== FRONTEND BUILD =====
         stage('Build Frontend') {
             steps {
-                dir('library-frontend') {  // <-- Make sure folder name matches repo
-                    echo "Installing frontend dependencies..."
+                dir('libary-react') { // Your frontend folder
+                    echo 'Installing frontend dependencies...'
                     bat 'npm install'
-                    echo "Building frontend..."
+                    echo 'Building frontend...'
                     bat 'npm run build'
                 }
             }
         }
 
-        // ================= FRONTEND DEPLOY =================
+        // ===== FRONTEND DEPLOY =====
         stage('Deploy Frontend to Tomcat') {
             steps {
-                bat """
-                if exist "${env.TOMCAT_PATH}\\library-react" (
-                    rmdir /S /Q "${env.TOMCAT_PATH}\\library-react"
+                bat '''
+                if exist "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\libary-react" (
+                    rmdir /S /Q "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\libary-react"
                 )
-                mkdir "${env.TOMCAT_PATH}\\library-react"
-                xcopy /E /I /Y library-frontend\\dist\\* "${env.TOMCAT_PATH}\\library-react"
-                """
+                mkdir "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\libary-react"
+                xcopy /E /I /Y libary-react\\dist\\* "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\libary-react"
+                '''
             }
         }
 
-        // ================= BACKEND BUILD =================
+        // ===== BACKEND BUILD =====
         stage('Build Backend') {
             steps {
-                dir('library-backend') {  // <-- Make sure folder name matches repo
-                    echo "Building backend with Maven..."
-                    bat "${MAVEN_HOME}\\bin\\mvn clean package -DskipTests"
+                dir('library-backend') { // Your backend folder
+                    echo 'Building backend with Maven...'
+                    bat 'mvn clean package -DskipTests'
                 }
             }
         }
 
-        // ================= BACKEND DEPLOY =================
+        // ===== BACKEND DEPLOY =====
         stage('Deploy Backend to Tomcat') {
             steps {
-                bat """
-                if exist "${env.TOMCAT_PATH}\\springbootlibraryapi.war" (
-                    del /Q "${env.TOMCAT_PATH}\\springbootlibraryapi.war"
+                bat '''
+                if exist "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\springbootlibraryapi.war" (
+                    del /Q "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\springbootlibraryapi.war"
                 )
-                if exist "${env.TOMCAT_PATH}\\springbootlibraryapi" (
-                    rmdir /S /Q "${env.TOMCAT_PATH}\\springbootlibraryapi"
+                if exist "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\springbootlibraryapi" (
+                    rmdir /S /Q "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\springbootlibraryapi"
                 )
-                copy library-backend\\target\\*.war "${env.TOMCAT_PATH}\\"
-                """
+                copy "library-backend\\target\\springbootlibraryapi.war" "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\"
+                '''
             }
         }
+
     }
 
     post {
         success {
-            echo '✅ Deployment Successful!'
+            echo '✅ Pipeline Deployment Successful!'
         }
         failure {
             echo '❌ Pipeline Failed!'
