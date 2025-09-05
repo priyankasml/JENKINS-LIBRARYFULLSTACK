@@ -28,7 +28,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo "Building project with Maven..."
-                dir('library-backend') {  // <- run Maven inside backend folder
+                dir('library-backend') {
                     bat "${MAVEN_HOME}\\bin\\mvn clean package -DskipTests"
                 }
             }
