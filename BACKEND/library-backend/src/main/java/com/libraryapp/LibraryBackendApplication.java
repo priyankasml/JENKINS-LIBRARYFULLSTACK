@@ -2,7 +2,7 @@ package com.libraryapp; // must match your folder structure
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.builder.SpringApplicationBuilder;
+//import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
 @SpringBootApplication
@@ -10,10 +10,11 @@ public class LibraryBackendApplication extends SpringBootServletInitializer {
 
     public static void main(String[] args) {
         SpringApplication.run(LibraryBackendApplication.class, args);
+        System.out.println("Project is running...");
     }
 
-    @Override
-    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-        return application.sources(LibraryBackendApplication.class);
-    }
+//    @Override
+//    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+//        return application.sources(LibraryBackendApplication.class);
+//    }
 }

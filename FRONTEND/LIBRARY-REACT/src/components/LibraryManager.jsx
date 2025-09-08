@@ -1,100 +1,204 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import BookForm from "./BookForm";
-import BookList from "./BookList";
-import "../App.css";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import config from './Config.js';
+import './LibraryManger.css';
 
-const API_URL = "http://localhost:8081/api/books";
-
-function LibraryManager() {
+const LibraryManager = () => {
   const [books, setBooks] = useState([]);
-  const [editingBook, setEditingBook] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(""); // ✅ Global success message
+  const [book, setBook] = useState({
+    id: '',
+    title: '',
+    author: '',
+    genre: '',
+    year: '',
+    owner: ''
+  });
+  const [idToFetch, setIdToFetch] = useState('');
+  const [fetchedBook, setFetchedBook] = useState(null);
+  const [message, setMessage] = useState('');
+  const [editMode, setEditMode] = useState(false);
 
-  // Fetch books
-  const fetchBooks = async () => {
-    try {
-      const response = await axios.get(API_URL);
-      setBooks(response.data);
-    } catch (error) {
-      console.error("Error fetching books:", error);
-    }
-  };
+  const baseUrl = `${config.url}/api/books`;
 
   useEffect(() => {
-    fetchBooks();
+    fetchAllBooks();
   }, []);
 
-  // Add book
-  const addBook = async (book) => {
+  const fetchAllBooks = async () => {
     try {
-      const response = await axios.post(API_URL, book);
-      setBooks([...books, response.data]);
-      setSuccessMessage("Book added successfully!");
-      setTimeout(() => setSuccessMessage(""), 3000);
+      const res = await axios.get(`${baseUrl}/all`);
+      setBooks(res.data);
     } catch (error) {
-      console.error("Error adding book:", error);
+      setMessage('Failed to fetch books.');
     }
   };
 
-  // Update book
-  const updateBook = async (updatedBook) => {
+  const handleChange = (e) => {
+    setBook({ ...book, [e.target.name]: e.target.value });
+  };
+
+  const validateForm = () => {
+    for (let key in book) {
+      if (!book[key] || book[key].toString().trim() === '') {
+        setMessage(`Please fill out the ${key} field.`);
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const addBook = async () => {
+    if (!validateForm()) return;
     try {
-      const response = await axios.put(`${API_URL}/${updatedBook.id}`, updatedBook);
-      setBooks(books.map((b) => (b.id === updatedBook.id ? response.data : b)));
-      setEditingBook(null);
-      setSuccessMessage("Book updated successfully!");
-      setTimeout(() => setSuccessMessage(""), 3000);
+      await axios.post(`${baseUrl}/add`, book);
+      setMessage('Book added successfully.');
+      fetchAllBooks();
+      resetForm();
     } catch (error) {
-      console.error("Error updating book:", error);
+      setMessage('Error adding book.');
     }
   };
 
-  // Delete book
+  const updateBook = async () => {
+    if (!validateForm()) return;
+    try {
+      await axios.put(`${baseUrl}/${book.id}`, book);
+      setMessage('Book updated successfully.');
+      fetchAllBooks();
+      resetForm();
+    } catch (error) {
+      setMessage('Error updating book.');
+    }
+  };
+
   const deleteBook = async (id) => {
     try {
-      await axios.delete(`${API_URL}/${id}`);
-      setBooks(books.filter((book) => book.id !== id));
-      setSuccessMessage("Book deleted successfully!");
-      setTimeout(() => setSuccessMessage(""), 3000);
+      await axios.delete(`${baseUrl}/${id}`);
+      setMessage('Book deleted successfully.');
+      fetchAllBooks();
     } catch (error) {
-      console.error("Error deleting book:", error);
+      setMessage('Error deleting book.');
     }
   };
 
-  const startEdit = (book) => {
-    setEditingBook(book);
+  const getBookById = async () => {
+    try {
+      const res = await axios.get(`${baseUrl}/${idToFetch}`);
+      setFetchedBook(res.data);
+      setMessage('');
+    } catch (error) {
+      setFetchedBook(null);
+      setMessage('Book not found.');
+    }
+  };
+
+  const handleEdit = (b) => {
+    setBook(b);
+    setEditMode(true);
+    setMessage(`Editing book with ID ${b.id}`);
+  };
+
+  const resetForm = () => {
+    setBook({
+      id: '',
+      title: '',
+      author: '',
+      genre: '',
+      year: '',
+      owner: ''
+    });
+    setEditMode(false);
   };
 
   return (
     <div className="library-container">
-      <h2 className="title">📚 Library Manager</h2>
 
-      {/* Global success message */}
-      {successMessage && (
-        <div
-          style={{
-            background: "#4caf50",
-            color: "#fff",
-            padding: "12px",
-            borderRadius: "8px",
-            marginBottom: "15px",
-            textAlign: "center",
-            fontWeight: "bold"
-          }}
-        >
-          {successMessage}
+      {message && (
+        <div className={`message-banner ${message.toLowerCase().includes('error') ? 'error' : 'success'}`}>
+          {message}
         </div>
       )}
 
-      <BookForm
-        onAdd={addBook}
-        onUpdate={updateBook}
-        editingBook={editingBook}
-      />
-      <BookList books={books} onEdit={startEdit} onDelete={deleteBook} />
+      <h2>Library Manager</h2>
+
+      <div>
+        <h3>{editMode ? 'Edit Book' : 'Add Book'}</h3>
+        <div className="form-grid">
+          <input type="number" name="id" placeholder="ID" value={book.id} onChange={handleChange} />
+          <input type="text" name="title" placeholder="Title" value={book.title} onChange={handleChange} />
+          <input type="text" name="author" placeholder="Author" value={book.author} onChange={handleChange} />
+          <input type="text" name="genre" placeholder="Genre" value={book.genre} onChange={handleChange} />
+          <input type="number" name="year" placeholder="Year" value={book.year} onChange={handleChange} />
+          <input type="text" name="owner" placeholder="Owner" value={book.owner} onChange={handleChange} />
+        </div>
+
+        <div className="btn-group">
+          {!editMode ? (
+            <button className="btn-blue" onClick={addBook}>Add Book</button>
+          ) : (
+            <>
+              <button className="btn-green" onClick={updateBook}>Update Book</button>
+              <button className="btn-gray" onClick={resetForm}>Cancel</button>
+            </>
+          )}
+        </div>
+      </div>
+
+      <div>
+        <h3>Get Book By ID</h3>
+        <input
+          type="number"
+          value={idToFetch}
+          onChange={(e) => setIdToFetch(e.target.value)}
+          placeholder="Enter ID"
+        />
+        <button className="btn-blue" onClick={getBookById}>Fetch</button>
+
+        {fetchedBook && (
+          <div>
+            <h4>Book Found:</h4>
+            <pre>{JSON.stringify(fetchedBook, null, 2)}</pre>
+          </div>
+        )}
+      </div>
+
+      <div>
+        <h3>All Books</h3>
+        {books.length === 0 ? (
+          <p>No books found.</p>
+        ) : (
+          <div className="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  {Object.keys(book).map((key) => (
+                    <th key={key}>{key}</th>
+                  ))}
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {books.map((b) => (
+                  <tr key={b.id}>
+                    {Object.keys(book).map((key) => (
+                      <td key={key}>{b[key]}</td>
+                    ))}
+                    <td>
+                      <div className="action-buttons">
+                        <button className="btn-green" onClick={() => handleEdit(b)}>Edit</button>
+                        <button className="btn-red" onClick={() => deleteBook(b.id)}>Delete</button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
     </div>
   );
-}
+};
 
 export default LibraryManager;

@@ -6,7 +6,7 @@ pipeline {
         // ===== FRONTEND BUILD =====
         stage('Build Frontend') {
             steps {
-                dir('libary-react') { // Your frontend folder
+                dir('FRONTEND\\LIBRARY-REACT') { // Your frontend folder
                     echo 'Installing frontend dependencies...'
                     bat 'npm install'
                     echo 'Building frontend...'
@@ -19,11 +19,11 @@ pipeline {
         stage('Deploy Frontend to Tomcat') {
             steps {
                 bat '''
-                if exist "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\libary-react" (
-                    rmdir /S /Q "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\libary-react"
+                if exist "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reactlibrayapi" (
+                    rmdir /S /Q "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reactlibrayapi"
                 )
-                mkdir "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\libary-react"
-                xcopy /E /I /Y libary-react\\dist\\* "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\libary-react"
+                mkdir "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reactlibrayapi"
+                xcopy /E /I /Y FRONTEND\\LIBRARY-REACT\\dist\\* "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\reactlibrayapi"
                 '''
             }
         }
@@ -31,7 +31,7 @@ pipeline {
         // ===== BACKEND BUILD =====
         stage('Build Backend') {
             steps {
-                dir('library-backend') { // Your backend folder
+                dir('BACKEND\\library-backend') { // Your backend folder
                     echo 'Building backend with Maven...'
                     bat 'mvn clean package -DskipTests'
                 }
@@ -48,7 +48,7 @@ pipeline {
                 if exist "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\springbootlibraryapi" (
                     rmdir /S /Q "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\springbootlibraryapi"
                 )
-                copy "library-backend\\target\\springbootlibraryapi.war" "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\"
+                copy "BACKEND\\library-backend\\target\\springbootlibraryapi.war" "C:\\Program Files\\Apache Software Foundation\\Tomcat 10.1\\webapps\\"
                 '''
             }
         }

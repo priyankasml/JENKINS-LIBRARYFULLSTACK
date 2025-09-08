@@ -12,19 +12,24 @@ import java.util.List;
 public class BookController {
 
     private final BookRepository bookRepository;
+    
+    @GetMapping("/")
+    public String start() {
+    	return "Hey Started..!!";
+    }
 
     public BookController(BookRepository bookRepository) {
         this.bookRepository = bookRepository;
     }
 
     // Get all books
-    @GetMapping
+    @GetMapping("/all")
     public List<Book> getAllBooks() {
         return bookRepository.findAll();
     }
 
     // Create a new book
-    @PostMapping
+    @PostMapping("/add")
     public Book createBook(@RequestBody Book book) {
         return bookRepository.save(book);
     }

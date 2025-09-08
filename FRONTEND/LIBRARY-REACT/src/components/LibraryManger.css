@@ -1,71 +1,120 @@
 .library-container {
-  max-width: 600px;
-  margin: 30px auto;
+  max-width: 900px;
+  margin: 40px auto;
   padding: 20px;
-  text-align: center;
-  background: #fdfdfd;
+  border: 1px solid #ddd;
   border-radius: 10px;
-  box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+  background-color: #f9f9f9;
+  font-family: Arial, sans-serif;
 }
 
-.book-form {
+h2 {
+  text-align: center;
+  color: #333;
+}
+
+h3 {
+  margin-top: 30px;
+  color: #555;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+input,
+select {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.btn-group {
   display: flex;
-  flex-direction: column;
   gap: 10px;
   margin-bottom: 20px;
 }
 
-.book-form label {
-  font-weight: bold;
-  text-align: left;
-}
-
-.book-form select,
-.book-form input,
-.book-form button {
-  padding: 8px;
+.btn-blue {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 16px;
   border-radius: 5px;
-  border: 1px solid #ccc;
-}
-
-.book-form button {
-  background: #4caf50;
-  color: white;
-  border: none;
   cursor: pointer;
 }
 
-.book-list {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+.btn-green {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-.book-card {
-  padding: 15px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background: #fafafa;
+.btn-gray {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.btn-red {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
   text-align: left;
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
 }
 
-.actions {
-  margin-top: 10px;
-}
-
-.actions button {
-  margin-right: 8px;
-  padding: 5px 10px;
-  border: none;
-  cursor: pointer;
-}
-
-.actions button:first-child {
-  background: #ff9800;
+th {
+  background-color: #007bff;
   color: white;
 }
 
-.actions button:last-child {
-  background: #f44336;
-  color: white;
+.action-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.message-banner {
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.message-banner.success {
+  background-color: #4caf50;
+  color: #fff;
+}
+
+.message-banner.error {
+  background-color: #dc3545;
+  color: #fff;
 }

@@ -16,7 +16,7 @@
     <groupId>com.libraryapp</groupId>
     <artifactId>library-backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>library-backend</name>
+    <name>LibrarySpringBoot</name>
     <description>Spring Boot backend for library app</description>
 
     <!-- WAR packaging -->
