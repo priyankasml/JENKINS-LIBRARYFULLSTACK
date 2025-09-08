@@ -33,7 +33,7 @@ pipeline {
             steps {
                 dir('BACKEND\\library-backend') { // Your backend folder
                     echo 'Building backend with Maven...'
-                    bat 'mvn clean package -DskipTests'
+                    bat 'mvn clean package'
                 }
             }
         }
